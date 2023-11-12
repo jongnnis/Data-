@@ -4,87 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homework</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        #up, #down {width: 500px; text-align: center; border: 0.5px solid black;}
+        * {margin: 0;}
+        .title {width: 100%; height: 400px; background: url(./image/title.jpg) no-repeat center/cover;}
+        h2 {color: white; font-size: 30px;}
+        #menu {margin: 0 auto; text-align: center; color: white;}
+
+        #container {margin: 0 auto; width: 80%;}
+        .table {overflow: auto;}
+        #up, #down {text-align: center; border: 0.5px solid #ddd;}
+        .time {text-align: center; border: 0.5px solid #ddd;}
+        .table {display: none; padding: 20px;}
     </style>
 </head>
 <body>
-    <h2>2022 고속도로 상시 시간대별 교통량</h2>
+    <div class="title">
+        <h2>2022 11월 고속도로 상시 시간대별 교통량</h2>
+        <div id="menu">
+            <p>일별 교통량 / 시간별 교통량</p>
+            <p>상행: <input type="button" value="상행/일별 교통량" onclick="upDay()">  <input type="button" value="상행/시간별 교통량" onclick="upTime()"></p>
+            <p>하행: <input type="button" value="하행/일별 교통량" onclick="downDay()">  <input type="button" value="하행/일별 교통량" onclick="downTime()"></p>
+        </div>
+    </div>
     <div id="container">
-        <div id="dirup">
-            <p>상행선</p>
-            <table id="up">
+        <div class="table" id="upDay">
+            <p>일별 교통량(상행선)</p>
+            <table class="day" id="up">
                 <tr id="dayUp">
-                    <th>일</th>
-                    <th>일별 교통량</th>
-                    <!-- <th>순위</th> -->
+                    <th id="day">일</th>
                 </tr>
-            </table>
-            <p>하행선</p>
-            <table id="down">
-                <tr id="dayDown">
-                    <th>일</th>
-                    <th>일별 교통량</th>
+                <tr id="trafficUp">
+                    <td>일별 교통량</td>
                 </tr>
             </table>
         </div>
-        <div id="dirDown"></div>
+        <div class="table" id="downDay">
+            <p>일별 교통량(하행선)</p>
+            <table class="day" id="down">
+            <tr id="dayDown">
+                <th>일</th>
+            </tr>
+            <tr id="trafficDown">
+                <td>일별 교통량</td>
+            </tr>
+        </table>
+        </div>        
+        <div class="table" id="upTime">
+            <p>시간대별 교통량 (상행)</p>
+            <table class="time" >
+            <tr>
+                <th>시간</th><th>1시</th><th>2시</th><th>3시</th><th>4시</th><th>5시</th><th>6시</th><th>7시</th><th>8시</th><th>9시</th><th>10시</th><th>11시</th><th>12시</th><th>13시</th><th>14시</th><th>15시</th><th>16시</th><th>17시</th><th>18시</th><th>19시</th><th>20시</th><th>21시</th><th>22시</th><th>23시</th><th>24시</th>
+            </tr>
+            <tr id="timeTableUp">
+                <td>시간별 교통량</td>
+            </tr>
+        </table>
+        </div>
+        <div class="table" id="downTime">
+            <p>시간대별 교통량 (하행)</p>
+            <table class="time">
+            <tr>
+                <th>시간</th><th>1시</th><th>2시</th><th>3시</th><th>4시</th><th>5시</th><th>6시</th><th>7시</th><th>8시</th><th>9시</th><th>10시</th><th>11시</th><th>12시</th><th>13시</th><th>14시</th><th>15시</th><th>16시</th><th>17시</th><th>18시</th><th>19시</th><th>20시</th><th>21시</th><th>22시</th><th>23시</th><th>24시</th>
+            </tr>
+            <tr id="timeTableDown">
+                <td>시간별 교통량</td>
+            </tr>
+        </table>
+        </div>
+        <!-- <canvas id="timeCvsUp"></canvas> -->
     </div>
-
+    <script defer src="./traffic-data.js"></script>
     <script>
-        fetch('https://apis.data.go.kr/1613000/KICTopenAPI/itmsh?serviceKey=pfd4dRtU1pToMhVnnHd%2Fc%2Bf1ZzzxJB6LVx4vEo4pDb7mkR03a4x6I59qRDPT2armrzGE9XYZvXV7D8VtSyEsKg%3D%3D&year=2022&dtype=1&output=json&pageNo=1&month=11&numOfRows=60')
-        .then((response)=> {
-            return response.json()
-        })
-        .then((datas)=> {
-            // console.log(datas)
-            const data = datas.traffic
-
-            //상행선 도로
-            const dirUp = data.filter((data) => data.direction === 1)
-            console.log(dirUp)
-            //하행선 도로
-            const dirDown = data.filter((data) => data.direction === 2)
-            console.log(dirDown)
-
-            // 일별 교통량 비교(상행)
-            const dayUp = document.getElementById('up')
-            for (let i=0; i<30; i++){
-                const row = document.createElement('tr')
-                const day = document.createElement('td')
-                day.textContent = `${i+1}일`
-                const traffic = document.createElement('td')
-                traffic.textContent = dirUp[i].total_count
-                row.appendChild(day)
-                row.appendChild(traffic)
-                dayUp.appendChild(row)
-            }
-
-            // 일별 교통량 비교(하행)
-            const dayDown = document.getElementById('down')
-            for (let i=0; i<30; i++){
-                const row = document.createElement('tr')
-                const day = document.createElement('td')
-                day.textContent = `${i+1}일`
-                const traffic = document.createElement('td')
-                traffic.textContent = dirDown[i].total_count
-                row.appendChild(day)
-                row.appendChild(traffic)
-                dayDown.appendChild(row)
-            }
-            
-            // 시간대별 평균 교통량 비교(상행)
-            // let timeTraffic = []
-            // for (let i=4; i<28; i++){
-            //     let sum = 0
-            //     for (let k=0; k<30; k++){
-            //         sum += dirUp[k][i]
-            //     }
-            //     timeTraffic.push(sum)
-            // }
-            // console.log(timeTraffic)
-            console.log(dirUp[0])
-        })
+        function upDay(){
+            const upDay = document.getElementById('upDay')
+            upDay.style.display='block';
+        }
+        function upTime(){
+            const upTime = document.getElementById('upTime')
+            upTime.style.display='block';
+        }
+        function downDay(){
+            const downDay = document.getElementById('downDay')
+            downDay.style.display='block';
+        }
+        function downTime(){
+            const downTime = document.getElementById('downTime')
+            downTime.style.display='block';
+        }
     </script>
 </body>
 </html>
